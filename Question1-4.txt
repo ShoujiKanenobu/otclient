@@ -1,0 +1,94 @@
+Q1:
+--addEvent() removed. Delay might cause issues due possiblity of program exiting before setStorageValue is called. Might be a required delay, but seems unnecessary in this context
+--Removed releaseStorage() to simplify. This wouldn't be removed if the function was called elsewhere.
+
+function onLogout(player)
+	if player:getStorageValue(1000) == 1 then
+		player:setStorageValue(1000, -1)
+	end
+	return true
+end
+
+
+
+
+
+
+
+Q2: 
+function printSmallGuildNames(memberCount)
+    --Changed < to > for desired functionality
+	local selectGuildQuery = "SELECT name FROM guilds WHERE max_members > %d;"
+	local resultId = db.storeQuery(string.format(selectGuildQuery, memberCount))
+	--Now iterates through the result and prints.
+	if(resultId ~= nil) then
+		while true do
+			local row = result.getNextRow(resultId)
+			if not row then 
+				break 
+			end
+			local guildName = result.getDataString(row, "name")
+			print(guildName)
+		end
+	end
+end
+
+
+
+
+
+
+Q3:
+
+--Renamed function
+function removePlayerFromParty(playerId, membername)
+ 	player = Player(playerId)
+ 	local party = player:getParty()
+ 	for k,v in pairs(party:getMembers()) do
+		if v == Player(membername) then
+			party:removeMember(Player(membername))
+			--Added break
+			break
+		end
+	end
+end
+
+
+
+Q4:
+void Game::addItemToPlayer(const std::string & recipient, uint16_t itemId) {
+    bool gotFromDatabase = false;
+
+    //g_game will handle cleanup if we get player through getPlayerByName(). 
+    Player * player = g_game.getPlayerByName(recipient);
+
+    if (!player) {
+        player = new Player(nullptr);
+
+        //player needs to be cleaned up only if gotten through loadPlayerByName(), so a flag was added to keep track of that.
+        gotFromDatabase = IOLoginData::loadPlayerByName(player, recipient)
+        if (!gotFromDatabase) {
+            return;
+        }
+    }
+
+    Item * item = Item::CreateItem(itemId);
+
+    if (!item) {
+        return;
+    }
+
+	//Ensure item is cleaned up if it fails to be added
+    if (g_game.internalAddItem(player -> getInbox(), item, INDEX_WHEREEVER, FLAG_NOLIMIT) != RETURNVALUE_NOERROR) {
+        delete item;
+    }
+
+    if (player -> isOffline()) {
+        IOLoginData::savePlayer(player);
+    }
+
+    //Cleanup if needed
+    if (gotFromDatabase)
+        delete player;
+
+}
