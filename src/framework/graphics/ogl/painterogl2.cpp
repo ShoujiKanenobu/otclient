@@ -63,7 +63,7 @@ void PainterOGL2::unbind()
     PainterShaderProgram::release();
 }
 
-void PainterOGL2::drawCoords(CoordsBuffer& coordsBuffer, DrawMode drawMode)
+void PainterOGL2::drawCoords(CoordsBuffer& coordsBuffer, DrawMode drawMode, int instances)
 {
     int vertexCount = coordsBuffer.getVertexCount();
     if(vertexCount == 0)
@@ -111,10 +111,20 @@ void PainterOGL2::drawCoords(CoordsBuffer& coordsBuffer, DrawMode drawMode)
         m_drawProgram->setAttributeArray(PainterShaderProgram::VERTEX_ATTR, coordsBuffer.getVertexArray(), 2);
 
     // draw the element in coords buffers
-    if(drawMode == Triangles)
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-    else if(drawMode == TriangleStrip)
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount);
+    if (instances == 1)
+    {
+        if (drawMode == Triangles)
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        else if (drawMode == TriangleStrip)
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount);
+    }
+    else
+    {
+        if (drawMode == Triangles)
+            glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCount, instances);
+        else if (drawMode == TriangleStrip)
+            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, vertexCount, instances);
+    }
 
     if(!textured)
         PainterShaderProgram::enableAttributeArray(PainterShaderProgram::TEXCOORD_ATTR);
@@ -137,7 +147,7 @@ void PainterOGL2::drawTextureCoords(CoordsBuffer& coordsBuffer, const TexturePtr
     drawCoords(coordsBuffer);
 }
 
-void PainterOGL2::drawTexturedRect(const Rect& dest, const TexturePtr& texture, const Rect& src)
+void PainterOGL2::drawTexturedRect(const Rect& dest, const TexturePtr& texture, const Rect& src, int instances)
 {
     if(dest.isEmpty() || src.isEmpty() || texture->isEmpty())
         return;
@@ -147,7 +157,7 @@ void PainterOGL2::drawTexturedRect(const Rect& dest, const TexturePtr& texture, 
 
     m_coordsBuffer.clear();
     m_coordsBuffer.addQuad(dest, src);
-    drawCoords(m_coordsBuffer, TriangleStrip);
+    drawCoords(m_coordsBuffer, TriangleStrip, instances);
 }
 
 void PainterOGL2::drawUpsideDownTexturedRect(const Rect& dest, const TexturePtr& texture, const Rect& src)

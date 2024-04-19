@@ -1,0 +1,9 @@
+Module
+  name: Dash Shader
+  description: Tavernlight question 6
+  author: Shouji
+  website: 127.0.0.1
+  sandboxed: true
+  scripts: [ dashshader.lua ]
+  @onLoad: init()
+  @onUnload: terminate()

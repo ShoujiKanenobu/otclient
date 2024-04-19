@@ -1,0 +1,21 @@
+QUESTION 6 SOURCE CODE CHANGES BREAKDOWN
+
+Shader support for creatures was the first issue for this question. 
+Looking around I found this otland post:
+
+https://otland.net/threads/otclient-showoff-show-off-your-otclient-project-module-ui-and-other.254460/post-2618184
+
+In order to allow the use of a custom vertex and fragment shader, I wrote a new function "createFullShader()".  
+This function takes in both a vertex and fragment shader.
+Its almost exactly the same as "createFragmentShader()", but it substitutes the default vertex shader.
+
+To offset the player afterimages in the vertex shader, I opted to use Instancing. 
+
+The draw calls were not instanced to begin with, so I modified the code to do so depending on the number of requested instances.
+I added a "instances" parameter to the draw function that defaults to 1.
+
+To accomplish this, each of the following functions had to have this "instances" parameter.
+ThingType::draw() -> Painter::drawTexturedRect() -> PainterOGL2::drawTexturedRect() -> PainterOGL2::drawCoords()
+
+drawCoords() will draw normally if instances == 1, and otherwise will draw the requested number of instances.
+Then the vertex shader grabs the instanceID and offsets the position based off of that. 

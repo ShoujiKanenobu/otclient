@@ -60,6 +60,35 @@ PainterShaderProgramPtr ShaderManager::createShader(const std::string& name)
     return shader;
 }
 
+PainterShaderProgramPtr ShaderManager::createFullShader(const std::string& name, std::string vertFile, std::string fragFile)
+{
+    PainterShaderProgramPtr shader = createShader(name);
+    if (!shader)
+        return nullptr;
+
+    fragFile = g_resources.guessFilePath(fragFile, "frag");
+    vertFile = g_resources.guessFilePath(vertFile, "vert");
+
+    if (!shader->addShaderFromSourceFile(Shader::Vertex, vertFile)) {
+        g_logger.error(stdext::format("unable to load vertex shader '%s' from source file '%s'", name, vertFile));
+        return nullptr;
+    }
+    if (!shader->addShaderFromSourceFile(Shader::Fragment, fragFile)) {
+        g_logger.error(stdext::format("unable to load fragment shader '%s' from source file '%s'", name, fragFile));
+        return nullptr;
+    }
+
+    
+
+    if (!shader->link()) {
+        g_logger.error(stdext::format("unable to link shader '%s' from files '%s' and '%s'", name, vertFile, fragFile));
+        return nullptr;
+    }
+    setupCharacterShader(shader);
+    m_shaders[name] = shader;
+    return shader;
+}
+
 PainterShaderProgramPtr ShaderManager::createFragmentShader(const std::string& name, std::string file)
 {
     PainterShaderProgramPtr shader = createShader(name);
@@ -134,6 +163,13 @@ void ShaderManager::setupMapShader(const PainterShaderProgramPtr& shader)
     shader->bindUniformLocation(MAP_CENTER_COORD, "u_MapCenterCoord");
     shader->bindUniformLocation(MAP_GLOBAL_COORD, "u_MapGlobalCoord");
     shader->bindUniformLocation(MAP_ZOOM, "u_MapZoom");
+}
+
+void ShaderManager::setupCharacterShader(const PainterShaderProgramPtr& shader)
+{
+    if (!shader)
+        return;
+    shader->bindUniformLocation(CREATURE_DIRECTION, "u_direction");
 }
 
 PainterShaderProgramPtr ShaderManager::getShader(const std::string& name)

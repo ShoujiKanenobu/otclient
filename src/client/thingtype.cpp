@@ -371,7 +371,7 @@ void ThingType::unserializeOtml(const OTMLNodePtr& node)
     }
 }
 
-void ThingType::draw(const Point& dest, float scaleFactor, int layer, int xPattern, int yPattern, int zPattern, int animationPhase, LightView *lightView)
+void ThingType::draw(const Point& dest, float scaleFactor, int layer, int xPattern, int yPattern, int zPattern, int animationPhase, LightView *lightView, int instances)
 {
     if(m_null)
         return;
@@ -405,7 +405,7 @@ void ThingType::draw(const Point& dest, float scaleFactor, int layer, int xPatte
     if(useOpacity)
         g_painter->setColor(Color(1.0f,1.0f,1.0f,m_opacity));
 
-    g_painter->drawTexturedRect(screenRect, texture, textureRect);
+    g_painter->drawTexturedRect(screenRect, texture, textureRect, instances);
 
     if(useOpacity)
         g_painter->setColor(Color::white);
