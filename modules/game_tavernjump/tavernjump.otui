@@ -1,0 +1,12 @@
+MainWindow
+  !text: tr('Jump Game')
+  size: 300 300
+
+  Button
+    id: jumpButton
+    !text: tr('Jump!')
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 5
+    margin-right: 10
+    width: 60

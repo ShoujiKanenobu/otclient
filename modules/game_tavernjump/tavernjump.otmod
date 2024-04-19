@@ -1,0 +1,9 @@
+Module
+  name: tavernjump
+  description: Tavernlight question 7
+  author: Shouji
+  website: 127.0.0.1
+  sandboxed: true
+  scripts: [ tavernjump.lua ]
+  @onLoad: init()
+  @onUnload: terminate()
